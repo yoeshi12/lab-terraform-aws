@@ -16,6 +16,7 @@ data "aws_subnets" "default" {
 }
 
 data "aws_ami" "al2023" {
+
   most_recent = true
   owners      = ["amazon"]
 
@@ -23,6 +24,11 @@ data "aws_ami" "al2023" {
     name   = "name"
     values = ["al2023-ami-2023.*-x86_64"]
   }
+}
+
+# IP pública desde donde se ejecuta Terraform
+data "http" "mi_ip" {
+  url = "https://checkip.amazonaws.com"
 }
 
 # ---------- IAM para Session Manager ----------
@@ -67,7 +73,7 @@ resource "aws_security_group" "web" {
 resource "aws_vpc_security_group_ingress_rule" "http" {
   security_group_id = aws_security_group.web.id
   description       = "HTTP"
-  cidr_ipv4         = "0.0.0.0/0"
+  cidr_ipv4         = "${chomp(data.http.mi_ip.response_body)}/32"
   from_port         = var.puerto_http
   to_port           = var.puerto_http
   ip_protocol       = "tcp"
