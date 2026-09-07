@@ -68,8 +68,8 @@ resource "aws_vpc_security_group_ingress_rule" "http" {
   security_group_id = aws_security_group.web.id
   description       = "HTTP"
   cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  to_port           = 80
+  from_port         = var.puerto_http
+  to_port           = var.puerto_http
   ip_protocol       = "tcp"
 }
 
@@ -92,6 +92,7 @@ resource "aws_instance" "web" {
   user_data = <<-EOF
     #!/bin/bash
     dnf install -y nginx
+    sed -i "s/listen       80;/listen       ${var.puerto_http};/" /etc/nginx/nginx.conf
     echo "<h1>Etapa 2 - Servidor de ${var.alumno} desplegado con Terraform</h1>" > /usr/share/nginx/html/index.html
     systemctl enable --now nginx
   EOF

@@ -25,3 +25,13 @@ variable "instance_type" {
   type        = string
   default     = "t3.micro"
 }
+variable "puerto_http" {
+  description = "Puerto utilizado por el servidor web"
+  type        = number
+  default     = 80
+
+  validation {
+    condition     = var.puerto_http >= 1 && var.puerto_http <= 65535
+    error_message = "El puerto HTTP debe estar entre 1 y 65535."
+  }
+}
