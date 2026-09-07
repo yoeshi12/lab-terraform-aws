@@ -1,0 +1,116 @@
+digraph Etapa3 {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    fontname="Arial",
+    fontsize=20,
+    labelloc="t",
+    label="Etapa 3 - Arquitectura de red en AWS",
+    pad=0.3,
+    nodesep=0.5,
+    ranksep=0.7
+  ]
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Arial",
+    fontsize=11,
+    color="#334155",
+    fillcolor="#F8FAFC"
+  ]
+
+  edge [
+    fontname="Arial",
+    fontsize=10,
+    color="#475569"
+  ]
+
+  internet [
+    label="Internet",
+    shape=ellipse,
+    fillcolor="#DBEAFE"
+  ]
+
+  igw [
+    label="Internet Gateway",
+    fillcolor="#FEF3C7"
+  ]
+
+  asg [
+    label="Auto Scaling Group\nCapacidad deseada: 2",
+    shape=folder,
+    fillcolor="#EDE9FE"
+  ]
+
+  subgraph cluster_vpc {
+    label="VPC 10.0.0.0/16"
+    color="#2563EB"
+    style="rounded"
+
+    subgraph cluster_publica_a {
+      label="Subnet pública us-east-2a\n10.0.0.0/24"
+      color="#16A34A"
+      style="rounded,dashed"
+
+      alb_a [
+        label="ALB - nodo AZ-a\nHTTP :80",
+        fillcolor="#DCFCE7"
+      ]
+
+      nat [
+        label="NAT Gateway\nSalida a Internet",
+        fillcolor="#FFE4E6"
+      ]
+    }
+
+    subgraph cluster_publica_b {
+      label="Subnet pública us-east-2b\n10.0.1.0/24"
+      color="#16A34A"
+      style="rounded,dashed"
+
+      alb_b [
+        label="ALB - nodo AZ-b\nHTTP :80",
+        fillcolor="#DCFCE7"
+      ]
+    }
+
+    subgraph cluster_privada_a {
+      label="Subnet privada us-east-2a\n10.0.10.0/24"
+      color="#9333EA"
+      style="rounded,dashed"
+
+      ec2_a [
+        label="EC2 aplicación\nIP observada: 10.0.10.220\nSin IP pública",
+        fillcolor="#F3E8FF"
+      ]
+    }
+
+    subgraph cluster_privada_b {
+      label="Subnet privada us-east-2b\n10.0.11.0/24"
+      color="#9333EA"
+      style="rounded,dashed"
+
+      ec2_b [
+        label="EC2 aplicación\nIP observada: 10.0.11.168\nSin IP pública",
+        fillcolor="#F3E8FF"
+      ]
+    }
+  }
+
+  internet -> igw
+  igw -> alb_a [label="HTTP"]
+  igw -> alb_b [label="HTTP"]
+
+  alb_a -> ec2_a [label="HTTP :80"]
+  alb_a -> ec2_b [label="HTTP :80"]
+  alb_b -> ec2_a [label="HTTP :80"]
+  alb_b -> ec2_b [label="HTTP :80"]
+
+  ec2_a -> nat [label="salida", style=dashed]
+  ec2_b -> nat [label="salida", style=dashed]
+  nat -> igw [label="0.0.0.0/0", style=dashed]
+
+  asg -> ec2_a [style=dotted]
+  asg -> ec2_b [style=dotted]
+}
