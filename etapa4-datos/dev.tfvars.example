@@ -1,0 +1,5 @@
+alumno            = "2023100941"
+instance_type     = "t3.micro"
+num_instancias    = 1
+db_instance_class = "db.t4g.micro"
+db_multi_az       = false
