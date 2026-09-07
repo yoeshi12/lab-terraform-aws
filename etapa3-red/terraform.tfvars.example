@@ -1,0 +1,6 @@
+region          = "us-east-2"
+nombre_proyecto = "lab-tf"
+alumno          = "2023100941"
+instance_type   = "t3.micro"
+num_instancias  = 2
+habilitar_nat   = true
