@@ -89,6 +89,7 @@ resource "aws_vpc_security_group_egress_rule" "todo" {
 # ---------- Instancia EC2 ----------
 
 resource "aws_instance" "web" {
+  count                  = 2
   ami                    = data.aws_ami.al2023.id
   instance_type          = var.instance_type
   subnet_id              = data.aws_subnets.default.ids[0]
@@ -114,6 +115,6 @@ resource "aws_instance" "web" {
   }
 
   tags = {
-    Name = "${local.prefijo}-web"
+    Name = "${local.prefijo}-web-${count.index + 1}"
   }
 }
