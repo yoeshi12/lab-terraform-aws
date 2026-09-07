@@ -1,0 +1,28 @@
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+crash.log
+crash.*.log
+*.tfplan
+
+# Variables con valores sensibles
+*.tfvars
+!*.tfvars.example
+
+# Overrides locales
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# --- Credenciales: NUNCA ---
+.env
+*.pem
+*.key
+credentials
+
+# --- Sistema / editor ---
+.DS_Store
+.vscode/settings.json
