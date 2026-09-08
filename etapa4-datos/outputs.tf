@@ -9,7 +9,7 @@ output "subnets_privadas" {
 }
 
 output "sg_app_id" {
-  description = "SG de la aplicación que se usará en la Etapa 4"
+  description = "SG de la aplicación"
   value       = aws_security_group.app.id
 }
 
@@ -17,13 +17,15 @@ output "url_alb" {
   description = "URL pública del servicio"
   value       = "http://${aws_lb.app.dns_name}"
 }
+
 output "db_endpoint" {
-  value = aws_db_instance.postgres.address
+  description = "Endpoint de PostgreSQL"
+  value       = aws_db_instance.postgres.address
 }
 
-output "db_password_ssm" {
-  description = "Ruta del parametro que contiene la contraseña"
-  value       = aws_ssm_parameter.db_password.name
+output "db_secret_arn" {
+  description = "ARN del secreto administrado por RDS"
+  value       = aws_db_instance.postgres.master_user_secret[0].secret_arn
 }
 
 output "entorno" {

@@ -1,16 +1,4 @@
-# Contraseña generada automáticamente
-resource "random_password" "db" {
-  length  = 24
-  special = false
-}
-
-# Contraseña cifrada en Parameter Store
-resource "aws_ssm_parameter" "db_password" {
-  name  = "/${local.prefijo}/db/password"
-  type  = "SecureString"
-  value = random_password.db.result
-}
-
+# Endpoint de la base de datos almacenado en Parameter Store
 resource "aws_ssm_parameter" "db_endpoint" {
   name  = "/${local.prefijo}/db/endpoint"
   type  = "String"
@@ -34,9 +22,9 @@ resource "aws_db_instance" "postgres" {
   storage_type      = "gp2"
   storage_encrypted = true
 
-  db_name  = var.db_nombre
-  username = var.db_usuario
-  password = random_password.db.result
+  db_name                     = var.db_nombre
+  username                    = var.db_usuario
+  manage_master_user_password = true
 
   db_subnet_group_name   = aws_db_subnet_group.db.name
   vpc_security_group_ids = [aws_security_group.db.id]
