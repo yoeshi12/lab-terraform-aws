@@ -23,9 +23,9 @@ output "db_endpoint" {
   value       = aws_db_instance.postgres.address
 }
 
-output "db_secret_arn" {
-  description = "ARN del secreto administrado por RDS"
-  value       = aws_db_instance.postgres.master_user_secret[0].secret_arn
+output "db_password_wo_version" {
+  description = "Versión de la contraseña write-only"
+  value       = aws_db_instance.postgres.password_wo_version
 }
 
 output "entorno" {
