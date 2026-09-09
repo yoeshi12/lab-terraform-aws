@@ -7,6 +7,7 @@ data "aws_iam_policy_document" "github_actions_app" {
       "iam:DeleteRole",
       "iam:GetRole",
       "iam:GetRolePolicy",
+      "iam:DeleteRolePolicy",
       "iam:ListAttachedRolePolicies",
       "iam:ListInstanceProfilesForRole",
       "iam:ListRolePolicies",
