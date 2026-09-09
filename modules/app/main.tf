@@ -51,6 +51,7 @@ resource "aws_vpc_security_group_egress_rule" "app_todo" {
 # PostgreSQL: solo acepta conexiones desde las instancias de la aplicacion
 
 resource "aws_lb" "app" {
+  #checkov:skip=CKV2_AWS_28:WAF se omite temporalmente en dev por costo; sera obligatorio en produccion.
   name               = "${var.prefijo}-alb"
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]

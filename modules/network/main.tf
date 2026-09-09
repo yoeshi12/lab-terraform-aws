@@ -58,6 +58,7 @@ resource "aws_internet_gateway" "igw" {
 
 # Un solo NAT Gateway para reducir el costo
 resource "aws_eip" "nat" {
+  #checkov:skip=CKV2_AWS_19:La EIP se asigna al NAT Gateway y no queda sin uso.
   count  = var.habilitar_nat ? 1 : 0
   domain = "vpc"
 

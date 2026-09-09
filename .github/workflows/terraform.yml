@@ -68,9 +68,15 @@ jobs:
       - name: Escaneo de seguridad con Checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: .
+          directory: modules
           framework: terraform
-          skip_path: "(etapa1|etapa2|etapa3|etapa4-datos|ejercicio-4-6-4)/"
+          soft_fail: false
+
+      - name: Escaneo de seguridad del bootstrap
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: bootstrap
+          framework: terraform
           soft_fail: false
 
       - name: Generar plan
