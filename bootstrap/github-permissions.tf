@@ -93,6 +93,7 @@ data "aws_iam_policy_document" "github_actions_minimo" {
       "ec2:GetLaunchTemplateData",
       "ec2:ModifyLaunchTemplate",
       "ec2:ModifySubnetAttribute",
+      "ec2:ModifySecurityGroupRules",
       "ec2:ModifyVpcAttribute",
       "ec2:ReleaseAddress",
       "ec2:ReplaceRoute",

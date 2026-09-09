@@ -10,6 +10,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
+  description       = "HTTP publico hacia el ALB"
   security_group_id = aws_security_group.alb.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
@@ -18,6 +19,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb_http" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "alb_todo" {
+  description       = "Salida del ALB"
   security_group_id = aws_security_group.alb.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
@@ -35,6 +37,7 @@ resource "aws_security_group" "app" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "app_desde_alb" {
+  description                  = "HTTP desde el ALB hacia la aplicacion"
   security_group_id            = aws_security_group.app.id
   referenced_security_group_id = aws_security_group.alb.id
   from_port                    = 80
@@ -43,6 +46,7 @@ resource "aws_vpc_security_group_ingress_rule" "app_desde_alb" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "app_todo" {
+  description       = "Salida de la aplicacion"
   security_group_id = aws_security_group.app.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
@@ -52,10 +56,11 @@ resource "aws_vpc_security_group_egress_rule" "app_todo" {
 
 resource "aws_lb" "app" {
   #checkov:skip=CKV2_AWS_28:WAF se omite temporalmente en dev por costo; sera obligatorio en produccion.
-  name               = "${var.prefijo}-alb"
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
-  subnets            = var.subnets_publicas_ids
+  name                       = "${var.prefijo}-alb"
+  load_balancer_type         = "application"
+  drop_invalid_header_fields = true
+  security_groups            = [aws_security_group.alb.id]
+  subnets                    = var.subnets_publicas_ids
 
   tags = {
     Name = "${var.prefijo}-alb"
