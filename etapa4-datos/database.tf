@@ -39,8 +39,8 @@ resource "aws_db_instance" "postgres" {
   multi_az               = var.db_multi_az
 
   # Configuración temporal para el laboratorio
-  backup_retention_period = 0
-  deletion_protection     = false
+  backup_retention_period = var.db_backup_retention_period
+  deletion_protection     = var.db_deletion_protection
   skip_final_snapshot     = true
   apply_immediately       = true
 

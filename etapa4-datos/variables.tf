@@ -61,3 +61,14 @@ variable "db_multi_az" {
   type        = bool
   default     = false
 }
+variable "db_backup_retention_period" {
+  description = "Cantidad de días que se conservarán los backups de RDS"
+  type        = number
+  default     = 0
+}
+
+variable "db_deletion_protection" {
+  description = "Activa la protección contra eliminación de RDS"
+  type        = bool
+  default     = false
+}
