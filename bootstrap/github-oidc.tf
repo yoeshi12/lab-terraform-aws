@@ -14,6 +14,24 @@ variable "github_repo" {
   type        = string
 }
 
+variable "github_owner_id" {
+  description = "Identificador inmutable del propietario en GitHub"
+  type        = string
+  default     = "295691934"
+}
+
+variable "github_repository_id" {
+  description = "Identificador inmutable del repositorio en GitHub"
+  type        = string
+  default     = "1362949081"
+}
+
+locals {
+  github_partes = split("/", var.github_repo)
+
+  github_subject_repo = "${local.github_partes[0]}@${var.github_owner_id}/${local.github_partes[1]}@${var.github_repository_id}"
+}
+
 provider "aws" {
   region = "us-east-2"
 }
@@ -39,7 +57,7 @@ resource "aws_iam_role" "github_actions" {
           "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
         }
         StringLike = {
-          "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo}:*"
+          "token.actions.githubusercontent.com:sub" = "repo:${local.github_subject_repo}:*"
         }
       }
     }]
