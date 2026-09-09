@@ -30,7 +30,7 @@ variable "instance_type" {
 
 variable "num_instancias" {
   type    = number
-  default = 1
+  default = 2
 }
 
 variable "habilitar_nat" {
