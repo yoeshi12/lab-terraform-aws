@@ -71,7 +71,7 @@ jobs:
           directory: .
           framework: terraform
           skip_path: "^(etapa1|etapa2|etapa3|etapa4-datos|ejercicio-4-6-4)/"
-          soft_fail: true
+          soft_fail: false
 
       - name: Generar plan
         id: plan

@@ -1,4 +1,6 @@
 data "aws_iam_policy_document" "github_actions_minimo" {
+  #checkov:skip=CKV_AWS_111:Excepcion temporal del laboratorio; las escrituras estan enumeradas y el rol OIDC solo confia en este repositorio.
+  #checkov:skip=CKV_AWS_356:Algunas operaciones de creacion usan Resource global; S3, RDS, IAM y SSM estan restringidos por ARN.
   statement {
     sid = "EstadoTerraformBucket"
 
