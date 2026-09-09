@@ -1,0 +1,112 @@
+name: Terraform - dev
+
+on:
+  pull_request:
+    paths:
+      - "envs/dev/**"
+      - "modules/**"
+
+  push:
+    branches:
+      - main
+    paths:
+      - "envs/dev/**"
+      - "modules/**"
+
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "Acción que ejecutará Terraform"
+        required: true
+        default: apply
+        type: choice
+        options:
+          - apply
+          - destroy
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+env:
+  TF_DIR: envs/dev
+  AWS_REGION: us-east-2
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Credenciales AWS mediante OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.1"
+
+      - name: Comprobar formato
+        run: terraform fmt -check -recursive
+
+      - name: Inicializar
+        run: terraform -chdir="$TF_DIR" init -input=false
+
+      - name: Validar
+        run: terraform -chdir="$TF_DIR" validate
+
+      - name: Escaneo de seguridad con Checkov
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          soft_fail: true
+
+      - name: Generar plan
+        id: plan
+        shell: bash
+        run: |
+          set -o pipefail
+          terraform -chdir="$TF_DIR" plan -input=false -no-color -out=plan.tfplan |
+            tee "$TF_DIR/plan.txt"
+
+      - name: Publicar plan en el PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs");
+            const plan = fs.readFileSync(
+              `${process.env.TF_DIR}/plan.txt`,
+              "utf8"
+            );
+            const body = `#### Terraform Plan
+
+            \`\`\`terraform
+            ${plan.substring(0, 60000)}
+            \`\`\``;
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+      - name: Aplicar en main
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || inputs.accion == 'apply')
+        run: terraform -chdir="$TF_DIR" apply -input=false -auto-approve plan.tfplan
+
+      - name: Destruir manualmente
+        if: github.event_name == 'workflow_dispatch' && inputs.accion == 'destroy'
+        run: terraform -chdir="$TF_DIR" destroy -input=false -auto-approve
