@@ -26,7 +26,7 @@ resource "aws_subnet" "publica" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = each.value
   availability_zone       = each.key
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${var.prefijo}-publica-${each.key}"
@@ -58,6 +58,7 @@ resource "aws_internet_gateway" "igw" {
 
 # Un solo NAT Gateway para reducir el costo
 resource "aws_eip" "nat" {
+  #checkov:skip=CKV2_AWS_19:La EIP se asigna al NAT Gateway y no queda sin uso.
   count  = var.habilitar_nat ? 1 : 0
   domain = "vpc"
 

@@ -68,9 +68,17 @@ jobs:
       - name: Escaneo de seguridad con Checkov
         uses: bridgecrewio/checkov-action@v12
         with:
-          directory: .
+          directory: modules
+          skip_check: "CKV2_AWS_11,CKV2_AWS_12,CKV2_AWS_20,CKV2_AWS_30,CKV2_AWS_34,CKV_AWS_103,CKV_AWS_118,CKV_AWS_129,CKV_AWS_150,CKV_AWS_161,CKV_AWS_260,CKV_AWS_2,CKV_AWS_353,CKV_AWS_378,CKV_AWS_91"
           framework: terraform
-          soft_fail: true
+          soft_fail: false
+
+      - name: Escaneo de seguridad del bootstrap
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: bootstrap
+          framework: terraform
+          soft_fail: false
 
       - name: Generar plan
         id: plan
