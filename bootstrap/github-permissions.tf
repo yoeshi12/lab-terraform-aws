@@ -36,6 +36,7 @@ data "aws_iam_policy_document" "github_actions_minimo" {
       "autoscaling:Describe*",
       "rds:Describe*",
       "rds:ListTagsForResource",
+      "ssm:DescribeParameters",
       "sts:GetCallerIdentity"
     ]
 
